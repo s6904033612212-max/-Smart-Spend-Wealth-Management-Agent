@@ -124,15 +124,30 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
     </div>
   </div>
 
-  <!-- REAL-TIME PRIVACY PAYLOAD INSPECTOR -->
-  <div class="bg-slate-900 text-emerald-400 p-5 rounded-2xl shadow-lg border border-slate-800 font-mono text-xs space-y-2">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-      <span class="font-bold flex items-center gap-2 text-white">🔒 Privacy Payload Inspector <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-normal">Real-time Data Anonymizer Engine Active</span></span>
-      <span class="text-slate-500 text-[10px]">Anonymized for LLM Processing</span>
+  <!-- REAL-TIME PRIVACY PAYLOAD INSPECTOR (DEVELOPER MODE) -->
+  <div class="mt-8 border-t border-slate-200/80 pt-4">
+    <div class="flex justify-end">
+      <!-- ปุ่มสวิตช์เปิด-ปิด Developer Mode -->
+      <button onclick="toggleInspector()" class="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1.5 transition-colors">
+        <span id="inspectorIcon">🛠️</span>
+        <span id="inspectorBtnText">Developer Mode (Privacy Payload)</span>
+      </button>
     </div>
-    <p class="text-slate-400 font-sans text-xs">// กระบวนการแปลงข้อมูลการเงินจริงให้อยู่ในรูปแบบนิรนาม (Anonymized Payload) อัตโนมัติก่อนส่งให้ AI:</p>
-    <pre id="payloadInspectorText" class="bg-slate-950 p-4 rounded-xl overflow-x-auto text-emerald-300 border border-slate-800/80 leading-relaxed"></pre>
+
+    <!-- ตัวกล่อง JSON ซ่อนไว้เป็นค่าเริ่มต้น (มี class hidden) -->
+    <div id="inspectorContent" class="hidden mt-3 bg-slate-900 text-emerald-400 p-5 rounded-2xl shadow-lg border border-slate-800 font-mono text-xs space-y-2">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <span class="font-bold flex items-center gap-2 text-white">
+          🔒 Privacy Payload Inspector 
+          <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-normal">Real-time Anonymizer Active</span>
+        </span>
+        <span class="text-slate-500 text-[10px]">Anonymized for LLM Processing</span>
+      </div>
+      <p class="text-slate-400 font-sans text-xs">// กระบวนการแปลงข้อมูลการเงินจริงให้อยู่ในรูปแบบนิรนาม (Anonymized Payload) อัตโนมัติก่อนส่งให้ AI:</p>
+      <pre id="payloadInspectorText" class="bg-slate-950 p-4 rounded-xl overflow-x-auto text-emerald-300 border border-slate-800/80 leading-relaxed"></pre>
+    </div>
   </div>
+
 </div>
 
 <!-- ========== PAGE: SAVINGS GOALS ========== -->
@@ -199,6 +214,21 @@ const B = n => '฿ ' + Math.round(n).toLocaleString('th-TH');
 const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const totalExpense = () => Object.values(categoryData).reduce((a, b) => a + b, 0);
 
+/* ---------- Toggle Inspector Function ---------- */
+function toggleInspector() {
+  const content = document.getElementById('inspectorContent');
+  const btnText = document.getElementById('inspectorBtnText');
+  const isHidden = content.classList.contains('hidden');
+
+  if (isHidden) {
+    content.classList.remove('hidden');
+    btnText.textContent = 'ซ่อน Developer Mode';
+  } else {
+    content.classList.add('hidden');
+    btnText.textContent = 'Developer Mode (Privacy Payload)';
+  }
+}
+
 /* ---------- Dynamic Privacy Anonymizer Engine ---------- */
 function updatePrivacyPayload() {
   const totalExp = totalExpense();
@@ -264,7 +294,7 @@ const myChart = new Chart(document.getElementById('expenseChart').getContext('2d
   options: { responsive: true, maintainAspectRatio: false }
 });
 
-/* ---------- Privacy ---------- */
+/* ---------- Privacy Mode ---------- */
 function togglePrivacy() {
   isPrivacyOn = !isPrivacyOn;
   document.body.classList.toggle('privacy', isPrivacyOn);
@@ -393,38 +423,3 @@ renderGoals();
 </script>
 </body>
 </html>
-
-<!-- REAL-TIME PRIVACY PAYLOAD INSPECTOR (แบบเปิด-ปิดได้) -->
-<div class="bg-slate-900 text-emerald-400 p-5 rounded-2xl shadow-lg border border-slate-800 font-mono text-xs space-y-2">
-  <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-    <span class="font-bold flex items-center gap-2 text-white">
-      🔒 Privacy Payload Inspector 
-      <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-normal">Developer Mode</span>
-    </span>
-    
-    <!-- ปุ่มสำหรับกด ซ่อน/แสดง กล่อง JSON -->
-    <button onclick="toggleInspector()" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded-lg border border-slate-700 transition">
-      <span id="inspectorBtnText">👁️ ซ่อนกล่องตรวจข้อมูล</span>
-    </button>
-  </div>
-
-  <div id="inspectorContent" class="space-y-2">
-    <p class="text-slate-400 font-sans text-xs">// กระบวนการแปลงข้อมูลการเงินจริงให้อยู่ในรูปแบบนิรนาม (Anonymized Payload) อัตโนมัติก่อนส่งให้ AI:</p>
-    <pre id="payloadInspectorText" class="bg-slate-950 p-4 rounded-xl overflow-x-auto text-emerald-300 border border-slate-800/80 leading-relaxed"></pre>
-  </div>
-</div>
-
-<script>
-// ฟังก์ชันสำหรับเปิด-ปิดแสดงกล่อง Inspector
-function toggleInspector() {
-  const content = document.getElementById('inspectorContent');
-  const btnText = document.getElementById('inspectorBtnText');
-  if (content.classList.contains('hidden')) {
-    content.classList.remove('hidden');
-    btnText.textContent = '👁️ ซ่อนกล่องตรวจข้อมูล';
-  } else {
-    content.classList.add('hidden');
-    btnText.textContent = '🔍 แสดงกล่องตรวจข้อมูล (Dev Mode)';
-  }
-}
-</script>
