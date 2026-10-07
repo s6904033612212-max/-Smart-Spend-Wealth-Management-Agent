@@ -393,3 +393,38 @@ renderGoals();
 </script>
 </body>
 </html>
+
+<!-- REAL-TIME PRIVACY PAYLOAD INSPECTOR (แบบเปิด-ปิดได้) -->
+<div class="bg-slate-900 text-emerald-400 p-5 rounded-2xl shadow-lg border border-slate-800 font-mono text-xs space-y-2">
+  <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+    <span class="font-bold flex items-center gap-2 text-white">
+      🔒 Privacy Payload Inspector 
+      <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-normal">Developer Mode</span>
+    </span>
+    
+    <!-- ปุ่มสำหรับกด ซ่อน/แสดง กล่อง JSON -->
+    <button onclick="toggleInspector()" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded-lg border border-slate-700 transition">
+      <span id="inspectorBtnText">👁️ ซ่อนกล่องตรวจข้อมูล</span>
+    </button>
+  </div>
+
+  <div id="inspectorContent" class="space-y-2">
+    <p class="text-slate-400 font-sans text-xs">// กระบวนการแปลงข้อมูลการเงินจริงให้อยู่ในรูปแบบนิรนาม (Anonymized Payload) อัตโนมัติก่อนส่งให้ AI:</p>
+    <pre id="payloadInspectorText" class="bg-slate-950 p-4 rounded-xl overflow-x-auto text-emerald-300 border border-slate-800/80 leading-relaxed"></pre>
+  </div>
+</div>
+
+<script>
+// ฟังก์ชันสำหรับเปิด-ปิดแสดงกล่อง Inspector
+function toggleInspector() {
+  const content = document.getElementById('inspectorContent');
+  const btnText = document.getElementById('inspectorBtnText');
+  if (content.classList.contains('hidden')) {
+    content.classList.remove('hidden');
+    btnText.textContent = '👁️ ซ่อนกล่องตรวจข้อมูล';
+  } else {
+    content.classList.add('hidden');
+    btnText.textContent = '🔍 แสดงกล่องตรวจข้อมูล (Dev Mode)';
+  }
+}
+</script>
