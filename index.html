@@ -37,7 +37,7 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
     <div class="flex items-center space-x-2">
       <!-- ปุ่มตั้งค่าเงินต้น/รายรับ -->
       <button onclick="openConfigModal()" class="px-3 py-1.5 bg-indigo-700 hover:bg-indigo-600 rounded-full text-xs font-medium transition border border-indigo-500/50 flex items-center gap-1">
-        ⚙️ ตั้งค่าเงิน
+        ⚙️ ตั้งค่าเงินต้น
       </button>
       <div class="flex items-center space-x-2 bg-indigo-800/60 px-3 py-1.5 rounded-full border border-indigo-700">
         <span class="text-xs text-indigo-200">🔒 Privacy:</span>
@@ -54,10 +54,10 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
 <!-- ========== PAGE: DASHBOARD ========== -->
 <div id="page-dash" class="space-y-6">
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative group">
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
       <p class="text-xs font-medium text-slate-400 uppercase">สินทรัพย์รวม (Net Worth)</p>
-      <h2 id="netWorthText" class="text-2xl font-bold mt-1 sensitive-data">฿ 1,250,000</h2>
-      <span class="text-xs text-emerald-500 font-medium">+4.2% จากเดือนที่แล้ว</span>
+      <h2 id="netWorthText" class="text-2xl font-bold mt-1 sensitive-data">฿ 0</h2>
+      <span class="text-xs text-slate-400 font-medium">(เงินต้น + รายรับ - รายจ่าย)</span>
     </div>
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
       <p class="text-xs font-medium text-slate-400 uppercase">รายรับเดือนนี้</p>
@@ -67,12 +67,12 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
       <p class="text-xs font-medium text-slate-400 uppercase">รายจ่ายเดือนนี้</p>
       <h2 id="totalExpenseText" class="text-2xl font-bold text-rose-600 mt-1 sensitive-data">฿ 28,500</h2>
-      <span id="expPct" class="text-xs text-slate-400">43.8% ของรายรับ</span>
+      <span id="expPct" class="text-xs text-slate-400">0% ของรายรับ</span>
     </div>
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
       <p class="text-xs font-medium text-slate-400 uppercase">อัตราการออม (Savings Rate)</p>
-      <h2 id="rateText" class="text-2xl font-bold text-indigo-600 mt-1 sensitive-data">56.2%</h2>
-      <span id="rateStatus" class="text-xs text-emerald-500 font-medium">สูงกว่าเป้าหมาย (50%)</span>
+      <h2 id="rateText" class="text-2xl font-bold text-indigo-600 mt-1 sensitive-data">0%</h2>
+      <span id="rateStatus" class="text-xs text-emerald-500 font-medium">คำนวณอัตโนมัติ</span>
     </div>
   </div>
 
@@ -83,7 +83,7 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
       <div>
         <h3 class="font-semibold text-lg">คำแนะนำการเงินจาก AI Agent</h3>
         <p id="aiAdviceMain" class="text-sm text-indigo-100 mt-1">
-          "จากการวิเคราะห์พฤติกรรมเดือนนี้ คุณมีอัตราการออมสูงถึง <strong id="aiRateAdv">56.2%</strong> แนะนำให้แบ่งเงินออมส่วนเกินไปใส่ในเป้าหมายการออมของคุณก่อน แล้วจึงนำส่วนที่เหลือไปลงทุนในกองทุนดัชนี (Index Fund) เพื่อสร้างผลตอบแทนครับ"
+          "จากการวิเคราะห์พฤติกรรมเดือนนี้ คุณมีอัตราการออม <strong id="aiRateAdv">0%</strong> แนะนำให้แบ่งเงินออมส่วนเกินไปใส่ในเป้าหมายการออมของคุณก่อน แล้วจึงนำส่วนที่เหลือไปลงทุนเพื่อสร้างผลตอบแทนครับ"
         </p>
         <button onclick="showPage('goals')" class="mt-3 text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full">ดูเป้าหมายการออม →</button>
       </div>
@@ -207,20 +207,20 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
 
 </main>
 
-<!-- ========== MODAL: SETTINGS (แก้ไขสินทรัพย์ & รายรับ) ========== -->
+<!-- ========== MODAL: SETTINGS (แก้ไขเงินต้น & รายรับ) ========== -->
 <div id="configModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
   <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
     <div class="flex justify-between items-center border-b pb-3">
-      <h3 class="font-bold text-lg text-slate-800">⚙️ ตั้งค่าข้อมูลการเงิน</h3>
+      <h3 class="font-bold text-lg text-slate-800">⚙️ ตั้งค่าเงินต้นและรายรับ</h3>
       <button onclick="closeConfigModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg">✕</button>
     </div>
     <form onsubmit="saveConfig(event)" class="space-y-4">
       <div>
-        <label class="block text-xs font-medium text-slate-600 mb-1">สินทรัพย์รวม (Net Worth)</label>
-        <input id="cfgNetWorth" type="number" min="0" required class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+        <label class="block text-xs font-medium text-slate-600 mb-1">เงินต้นเริ่มต้นสะสม (Base Assets)</label>
+        <input id="cfgBaseAssets" type="number" min="0" required class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
       </div>
       <div>
-        <label class="block text-xs font-medium text-slate-600 mb-1">รายรับรวมต่อเดือน (Income)</label>
+        <label class="block text-xs font-medium text-slate-600 mb-1">รายรับประจำเดือนนี้ (Income)</label>
         <input id="cfgIncome" type="number" min="1" required class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
       </div>
       <div class="flex gap-2 pt-2">
@@ -235,9 +235,9 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
 let isPrivacyOn = false;
 let categoryData = { 'ที่พักอาศัย': 12000, 'อาหาร': 8500, 'เดินทาง': 3000, 'ช้อปปิ้ง': 5000 };
 
-// ตัวแปรที่ปรับแก้ไขได้จริง
+// เงินต้นเริ่มต้นก่อนหักรายจ่าย
+let baseAssets = 1200000;
 let currentIncome = 65000;
-let currentNetWorth = 1250000;
 
 const sessionRandomId = "anon_" + Math.random().toString(36).substring(2, 10);
 
@@ -247,7 +247,7 @@ const totalExpense = () => Object.values(categoryData).reduce((a, b) => a + b, 0
 
 /* ---------- Config Modal Functions ---------- */
 function openConfigModal() {
-  document.getElementById('cfgNetWorth').value = currentNetWorth;
+  document.getElementById('cfgBaseAssets').value = baseAssets;
   document.getElementById('cfgIncome').value = currentIncome;
   document.getElementById('configModal').classList.remove('hidden');
 }
@@ -258,7 +258,7 @@ function closeConfigModal() {
 
 function saveConfig(e) {
   e.preventDefault();
-  currentNetWorth = parseFloat(document.getElementById('cfgNetWorth').value) || 0;
+  baseAssets = parseFloat(document.getElementById('cfgBaseAssets').value) || 0;
   currentIncome = parseFloat(document.getElementById('cfgIncome').value) || 0;
   
   updateDashboardUI();
@@ -267,15 +267,19 @@ function saveConfig(e) {
   closeConfigModal();
 }
 
-/* ---------- Update Dashboard UI ---------- */
+/* ---------- Update Dashboard UI & Formula ---------- */
 function updateDashboardUI() {
-  const t = totalExpense();
-  const savingsRate = currentIncome > 0 ? (((currentIncome - t) / currentIncome) * 100).toFixed(1) : 0;
-  const expPctVal = currentIncome > 0 ? ((t / currentIncome) * 100).toFixed(1) : 0;
+  const totalExp = totalExpense();
+  
+  // สูตรคำนวณ Net Worth Real-time: เงินต้น + รายรับ - รายจ่ายทั้งหมด
+  const netWorth = baseAssets + currentIncome - totalExp;
 
-  document.getElementById('netWorthText').textContent = B(currentNetWorth);
+  const savingsRate = currentIncome > 0 ? (((currentIncome - totalExp) / currentIncome) * 100).toFixed(1) : 0;
+  const expPctVal = currentIncome > 0 ? ((totalExp / currentIncome) * 100).toFixed(1) : 0;
+
+  document.getElementById('netWorthText').textContent = B(netWorth);
   document.getElementById('incomeText').textContent = B(currentIncome);
-  document.getElementById('totalExpenseText').textContent = B(t);
+  document.getElementById('totalExpenseText').textContent = B(totalExp);
   document.getElementById('expPct').textContent = expPctVal + '% ของรายรับ';
   document.getElementById('rateText').textContent = savingsRate + '%';
   document.getElementById('aiRateAdv').textContent = savingsRate + '%';
@@ -401,6 +405,8 @@ function addExpense(e) {
   list.insertBefore(li, list.firstChild);
 
   document.getElementById('expenseForm').reset();
+  
+  // อัปเดต Net Worth และค่าต่างๆ เมื่อเพิ่มรายจ่ายใหม่
   updateDashboardUI();
   updatePrivacyPayload();
   renderGoals();
