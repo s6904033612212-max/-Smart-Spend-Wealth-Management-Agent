@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart Spend & Wealth Management Dashboard</title>
+<!-- Tailwind CSS & Chart.js CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
+.privacy .sensitive-data{filter:blur(6px);user-select:none}
+.tab-on{background:#fff;color:#312e81}
+.tab-off{color:#c7d2fe}
+</style>
+</head>
+<body class="text-slate-800 min-h-screen">
+
+<!-- HEADER / NAVIGATION -->
+<header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap gap-3 justify-between items-center">
+    <div class="flex items-center space-x-3">
+      <div class="p-2 bg-indigo-600 rounded-lg text-xl leading-none">💰</div>
+      <div>
+        <h1 class="font-bold text-xl">Smart Spend Agent</h1>
+        <p class="text-xs text-indigo-200">AI-Powered Wealth Management</p>
+      </div>
+    </div>
+    <nav class="flex bg-indigo-800/60 rounded-full p-1 text-sm font-medium">
+      <button id="tab-dash" onclick="showPage('dash')" class="px-4 py-1.5 rounded-full tab-on">📊 ภาพรวม</button>
+      <button id="tab-goals" onclick="showPage('goals')" class="px-4 py-1.5 rounded-full tab-off">🎯 เป้าหมายการออม</button>
+    </nav>
+    <div class="flex items-center space-x-2 bg-indigo-800/60 px-3 py-1.5 rounded-full border border-indigo-700">
+      <span class="text-xs text-indigo-200">🔒 Privacy Mode:</span>
+      <button id="privacyToggle" onclick="togglePrivacy()" class="w-10 h-5 bg-slate-400 rounded-full p-0.5 transition-colors duration-200" aria-label="Privacy mode">
+        <div id="toggleDot" class="w-4 h-4 bg-white rounded-full transition-transform duration-200"></div>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-6">
+
+<!-- ========== PAGE: DASHBOARD ========== -->
+<div id="page-dash" class="space-y-6">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <p class="text-xs font-medium text-slate-400 uppercase">สินทรัพย์รวม (Net Worth)</p>
+      <h2 id="netWorthText" class="text-2xl font-bold mt-1 sensitive-data">฿ 1,250,000</h2>
+      <span class="text-xs text-emerald-500 font-medium">+4.2% จากเดือนที่แล้ว</span>
+    </div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <p class="text-xs font-medium text-slate-400 uppercase">รายรับเดือนนี้</p>
+      <h2 class="text-2xl font-bold text-emerald-600 mt-1 sensitive-data">฿ 65,000</h2>
+      <span class="text-xs text-slate-400">เงินเดือน + เงินลงทุน</span>
+    </div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <p class="text-xs font-medium text-slate-400 uppercase">รายจ่ายเดือนนี้</p>
+      <h2 id="totalExpenseText" class="text-2xl font-bold text-rose-600 mt-1 sensitive-data">฿ 28,500</h2>
+      <span id="expPct" class="text-xs text-slate-400">43.8% ของรายรับ</span>
+    </div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <p class="text-xs font-medium text-slate-400 uppercase">อัตราการออม (Savings Rate)</p>
+      <h2 id="rateText" class="text-2xl font-bold text-indigo-600 mt-1 sensitive-data">56.2%</h2>
+      <span class="text-xs text-emerald-500 font-medium">สูงกว่าเป้าหมาย (50%)</span>
+    </div>
+  </div>
+
+  <!-- AI ADVICE BANNER -->
+  <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 rounded-2xl shadow-md">
+    <div class="flex items-start space-x-4">
+      <div class="p-3 bg-white/20 rounded-xl">🤖</div>
+      <div>
+        <h3 class="font-semibold text-lg">คำแนะนำการเงินจาก AI Agent</h3>
+        <p class="text-sm text-indigo-100 mt-1">
+          "จากการวิเคราะห์พฤติกรรมเดือนนี้ คุณมีอัตราการออมสูงถึง <strong id="aiRateAdv">56.2%</strong> แนะนำให้แบ่งเงินออมส่วนเกินไปใส่ในเป้าหมายการออมของคุณก่อน แล้วจึงนำส่วนที่เหลือไปลงทุนในกองทุนดัชนี (Index Fund) เพื่อสร้างผลตอบแทนครับ"
+        </p>
+        <button onclick="showPage('goals')" class="mt-3 text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full">ดูเป้าหมายการออม →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS & FORM -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <h3 class="font-bold mb-4">สัดส่วนรายจ่ายตามหมวดหมู่</h3>
+      <div class="h-64"><canvas id="expenseChart"></canvas></div>
+    </div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <h3 class="font-bold mb-4">บันทึกรายจ่ายใหม่</h3>
+      <form id="expenseForm" onsubmit="addExpense(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">รายการ</label>
+          <input type="text" id="expName" required placeholder="เช่น ค่าอาหาร, ค่าน้ำมัน" class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">จำนวนเงิน (บาท)</label>
+          <input type="number" id="expAmount" required min="1" placeholder="0.00" class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">หมวดหมู่</label>
+          <select id="expCategory" class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+            <option value="อาหาร">อาหาร</option>
+            <option value="ที่พักอาศัย">ที่พักอาศัย</option>
+            <option value="เดินทาง">เดินทาง</option>
+            <option value="ช้อปปิ้ง">ช้อปปิ้ง/บันเทิง</option>
+            <option value="อื่นๆ">อื่นๆ</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium transition">+ เพิ่มรายการ</button>
+      </form>
+    </div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <h3 class="font-bold mb-4">รายการล่าสุด</h3>
+      <ul id="transactionList" class="space-y-3 max-h-64 overflow-y-auto pr-1 text-sm">
+        <li class="flex justify-between items-center p-2 bg-slate-50 rounded-lg"><span>ค่าคอนโด / น้ำ-ไฟ</span><span class="font-semibold text-rose-600 sensitive-data">- ฿ 12,000</span></li>
+        <li class="flex justify-between items-center p-2 bg-slate-50 rounded-lg"><span>อาหาร & กาแฟประจำวัน</span><span class="font-semibold text-rose-600 sensitive-data">- ฿ 8,500</span></li>
+        <li class="flex justify-between items-center p-2 bg-slate-50 rounded-lg"><span>ค่าน้ำมันรถ</span><span class="font-semibold text-rose-600 sensitive-data">- ฿ 3,000</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- REAL-TIME PRIVACY PAYLOAD INSPECTOR -->
+  <div class="bg-slate-900 text-emerald-400 p-5 rounded-2xl shadow-lg border border-slate-800 font-mono text-xs space-y-2">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+      <span class="font-bold flex items-center gap-2 text-white">🔒 Privacy Payload Inspector <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-normal">Real-time Data Anonymizer Engine Active</span></span>
+      <span class="text-slate-500 text-[10px]">Anonymized for LLM Processing</span>
+    </div>
+    <p class="text-slate-400 font-sans text-xs">// กระบวนการแปลงข้อมูลการเงินจริงให้อยู่ในรูปแบบนิรนาม (Anonymized Payload) อัตโนมัติก่อนส่งให้ AI:</p>
+    <pre id="payloadInspectorText" class="bg-slate-950 p-4 rounded-xl overflow-x-auto text-emerald-300 border border-slate-800/80 leading-relaxed"></pre>
+  </div>
+</div>
+
+<!-- ========== PAGE: SAVINGS GOALS ========== -->
+<div id="page-goals" class="space-y-6 hidden">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <p class="text-xs font-medium text-slate-400 uppercase">เป้าหมายรวม</p>
+      <h2 id="gTarget" class="text-2xl font-bold mt-1 sensitive-data"></h2>
+    </div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <p class="text-xs font-medium text-slate-400 uppercase">ออมได้แล้ว</p>
+      <h2 id="gSaved" class="text-2xl font-bold text-emerald-600 mt-1 sensitive-data"></h2>
+      <span id="gPct" class="text-xs text-slate-400"></span>
+    </div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <p class="text-xs font-medium text-slate-400 uppercase">เงินเหลือต่อเดือน (รายรับ − รายจ่าย)</p>
+      <h2 id="gSurplus" class="text-2xl font-bold text-indigo-600 mt-1 sensitive-data"></h2>
+    </div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <p class="text-xs font-medium text-slate-400 uppercase">ต้องออมต่อเดือนทุกเป้าหมาย</p>
+      <h2 id="gNeed" class="text-2xl font-bold text-amber-600 mt-1 sensitive-data"></h2>
+    </div>
+  </div>
+
+  <div id="gAdvice" class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-5 rounded-2xl shadow-md text-sm"></div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-4" id="goalList"></div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 h-fit">
+      <h3 class="font-bold mb-4">เพิ่มเป้าหมายใหม่</h3>
+      <form onsubmit="addGoal(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">ชื่อเป้าหมาย</label>
+          <input id="gName" required maxlength="40" placeholder="เช่น ซื้อโน้ตบุ๊ก" class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">จำนวนเงินเป้าหมาย (บาท)</label>
+          <input id="gAmt" type="number" required min="1" class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">ออมแล้ว (บาท)</label>
+          <input id="gSv" type="number" min="0" value="0" class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">กำหนดเวลา</label>
+          <input id="gDate" type="date" required class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium transition">+ เพิ่มเป้าหมาย</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+let isPrivacyOn = false;
+let categoryData = { 'ที่พักอาศัย': 12000, 'อาหาร': 8500, 'เดินทาง': 3000, 'ช้อปปิ้ง': 5000 };
+const INCOME = 65000;
+let initialAssets = 1250000;
+const sessionRandomId = "anon_" + Math.random().toString(36).substring(2, 10);
+
+const B = n => '฿ ' + Math.round(n).toLocaleString('th-TH');
+const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const totalExpense = () => Object.values(categoryData).reduce((a, b) => a + b, 0);
+
+/* ---------- Dynamic Privacy Anonymizer Engine ---------- */
+function updatePrivacyPayload() {
+  const totalExp = totalExpense();
+  const savingsRate = INCOME > 0 ? ((INCOME - totalExp) / INCOME * 100) : 0;
+  
+  let incomeTier = "LOW";
+  if (INCOME >= 50000) incomeTier = "HIGH";
+  else if (INCOME >= 30000) incomeTier = "MEDIUM";
+
+  let rateBand = "<20%";
+  if (savingsRate >= 50) rateBand = ">50%";
+  else if (savingsRate >= 30) rateBand = "30-50%";
+  else if (savingsRate >= 20) rateBand = "20-30%";
+
+  const categoryShare = {};
+  let topCategory = "-";
+  let maxShare = -1;
+
+  Object.keys(categoryData).forEach(cat => {
+    const sharePct = totalExp > 0 ? Math.round((categoryData[cat] / totalExp) * 100) : 0;
+    categoryShare[cat] = sharePct + "%";
+    if (sharePct > maxShare) {
+      maxShare = sharePct;
+      topCategory = cat;
+    }
+  });
+
+  const payload = {
+    session_id: sessionRandomId,
+    income_tier: incomeTier,
+    savings_rate_band: rateBand,
+    top_category: topCategory,
+    category_share_approx: categoryShare,
+    goals_count: goals.length,
+    timestamp: new Date().toISOString()
+  };
+
+  const inspectorElem = document.getElementById('payloadInspectorText');
+  if (inspectorElem) {
+    inspectorElem.textContent = JSON.stringify(payload, null, 2);
+  }
+}
+
+/* ---------- Navigation ---------- */
+function showPage(p) {
+  ['dash', 'goals'].forEach(k => {
+    document.getElementById('page-' + k).classList.toggle('hidden', k !== p);
+    const t = document.getElementById('tab-' + k);
+    t.classList.toggle('tab-on', k === p);
+    t.classList.toggle('tab-off', k !== p);
+  });
+  if (p === 'goals') renderGoals();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- Chart ---------- */
+const myChart = new Chart(document.getElementById('expenseChart').getContext('2d'), {
+  type: 'doughnut',
+  data: {
+    labels: Object.keys(categoryData),
+    datasets: [{ data: Object.values(categoryData), backgroundColor: ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#94a3b8'] }]
+  },
+  options: { responsive: true, maintainAspectRatio: false }
+});
+
+/* ---------- Privacy ---------- */
+function togglePrivacy() {
+  isPrivacyOn = !isPrivacyOn;
+  document.body.classList.toggle('privacy', isPrivacyOn);
+  document.getElementById('toggleDot').style.transform = isPrivacyOn ? 'translateX(20px)' : 'translateX(0)';
+  const b = document.getElementById('privacyToggle');
+  b.classList.toggle('bg-indigo-600', isPrivacyOn);
+  b.classList.toggle('bg-slate-400', !isPrivacyOn);
+}
+
+/* ---------- Expenses ---------- */
+function addExpense(e) {
+  e.preventDefault();
+  const name = document.getElementById('expName').value;
+  const amount = parseFloat(document.getElementById('expAmount').value);
+  const category = document.getElementById('expCategory').value;
+  categoryData[category] = (categoryData[category] || 0) + amount;
+  myChart.data.labels = Object.keys(categoryData);
+  myChart.data.datasets[0].data = Object.values(categoryData);
+  myChart.update();
+
+  const li = document.createElement('li');
+  li.className = 'flex justify-between items-center p-2 bg-slate-50 rounded-lg';
+  li.innerHTML = `<span>${esc(name)}</span><span class="font-semibold text-rose-600 sensitive-data">- ${B(amount)}</span>`;
+  const list = document.getElementById('transactionList');
+  list.insertBefore(li, list.firstChild);
+
+  const t = totalExpense();
+  const currentSavingsRate = ((INCOME - t) / INCOME * 100).toFixed(1);
+  document.getElementById('totalExpenseText').textContent = B(t);
+  document.getElementById('expPct').textContent = (t / INCOME * 100).toFixed(1) + '% ของรายรับ';
+  document.getElementById('rateText').textContent = currentSavingsRate + '%';
+  document.getElementById('aiRateAdv').textContent = currentSavingsRate + '%';
+  
+  document.getElementById('expenseForm').reset();
+  updatePrivacyPayload();
+  renderGoals();
+}
+
+/* ---------- Savings Goals ---------- */
+function inMonths(n) { const d = new Date(); d.setMonth(d.getMonth() + n); return d.toISOString().slice(0, 10); }
+let goals = [
+  { id: 1, name: 'กองทุนฉุกเฉิน (6 เดือน)', target: 170000, saved: 90000, date: inMonths(8) },
+  { id: 2, name: 'ทริปญี่ปุ่น', target: 80000, saved: 25000, date: inMonths(6) },
+  { id: 3, name: 'เงินดาวน์รถ', target: 200000, saved: 40000, date: inMonths(15) }
+];
+let nextId = 4;
+
+function monthsLeft(date) {
+  const now = new Date(), d = new Date(date);
+  return Math.max(1, (d.getFullYear() - now.getFullYear()) * 12 + d.getMonth() - now.getMonth());
+}
+function addGoal(e) {
+  e.preventDefault();
+  goals.push({
+    id: nextId++,
+    name: document.getElementById('gName').value.trim(),
+    target: parseFloat(document.getElementById('gAmt').value),
+    saved: parseFloat(document.getElementById('gSv').value) || 0,
+    date: document.getElementById('gDate').value
+  });
+  e.target.reset();
+  updatePrivacyPayload();
+  renderGoals();
+}
+function deposit(id) {
+  const inp = document.getElementById('dep-' + id);
+  const v = parseFloat(inp.value);
+  if (!(v > 0)) return;
+  const g = goals.find(x => x.id === id);
+  g.saved = Math.min(g.target, g.saved + v);
+  renderGoals();
+}
+function removeGoal(id) { 
+  goals = goals.filter(g => g.id !== id); 
+  updatePrivacyPayload();
+  renderGoals(); 
+}
+
+function renderGoals() {
+  const surplus = INCOME - totalExpense();
+  const tTarget = goals.reduce((a, g) => a + g.target, 0);
+  const tSaved = goals.reduce((a, g) => a + g.saved, 0);
+  let need = 0;
+  document.getElementById('goalList').innerHTML = goals.length ? goals.map(g => {
+    const pct = Math.min(100, g.saved / g.target * 100);
+    const m = monthsLeft(g.date);
+    const done = g.saved >= g.target;
+    const perMonth = done ? 0 : Math.ceil((g.target - g.saved) / m);
+    need += perMonth;
+    return `<div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <div class="flex justify-between items-start gap-2">
+        <div>
+          <h4 class="font-semibold">${done ? '✅' : '🎯'} ${esc(g.name)}</h4>
+          <p class="text-xs text-slate-400">กำหนด ${new Date(g.date).toLocaleDateString('th-TH', { month: 'short', year: 'numeric' })} · เหลือ ${m} เดือน</p>
+        </div>
+        <button onclick="removeGoal(${g.id})" class="text-slate-300 hover:text-rose-500" aria-label="ลบเป้าหมาย">✕</button>
+      </div>
+      <div class="flex justify-between text-sm mt-3">
+        <span class="sensitive-data">${B(g.saved)} / ${B(g.target)}</span>
+        <span class="font-semibold text-indigo-600">${pct.toFixed(0)}%</span>
+      </div>
+      <div class="h-2.5 bg-slate-100 rounded-full mt-1 overflow-hidden"><div class="h-full ${done ? 'bg-emerald-500' : 'bg-indigo-500'} rounded-full" style="width:${pct}%"></div></div>
+      <div class="flex flex-wrap justify-between items-center gap-2 mt-3">
+        <span class="text-xs text-slate-500">${done ? 'บรรลุเป้าหมายแล้ว 🎉' : `ควรออม <b class="sensitive-data">${B(perMonth)}</b>/เดือน`}</span>
+        ${done ? '' : `<div class="flex gap-2">
+          <input id="dep-${g.id}" type="number" min="1" placeholder="จำนวนเงิน" class="w-28 px-2 py-1.5 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+          <button onclick="deposit(${g.id})" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm">+ ออม</button></div>`}
+      </div></div>`;
+  }).join('') : '<div class="bg-white p-8 rounded-2xl text-center text-slate-400 border border-slate-100">ยังไม่มีเป้าหมาย เพิ่มเป้าหมายแรกได้ที่ฟอร์มด้านขวา</div>';
+
+  document.getElementById('gTarget').textContent = B(tTarget);
+  document.getElementById('gSaved').textContent = B(tSaved);
+  document.getElementById('gPct').textContent = tTarget ? (tSaved / tTarget * 100).toFixed(1) + '% ของเป้าหมายรวม' : '';
+  document.getElementById('gSurplus').textContent = B(surplus);
+  document.getElementById('gNeed').textContent = B(need);
+
+  const adv = document.getElementById('gAdvice');
+  if (!goals.length) adv.innerHTML = '🤖 <b>AI Agent:</b> ลองตั้งเป้าหมายแรก เช่น กองทุนฉุกเฉิน 3–6 เท่าของรายจ่ายต่อเดือน';
+  else if (need <= surplus) adv.innerHTML = `🤖 <b>AI Agent:</b> เงินเหลือต่อเดือนของคุณเพียงพอสำหรับทุกเป้าหมาย และยังเหลืออีกประมาณ <b class="sensitive-data">${B(surplus - need)}</b> ต่อเดือน สามารถนำไปลงทุนใน Index Fund ได้`;
+  else adv.innerHTML = `🤖 <b>AI Agent:</b> ยอดที่ต้องออมต่อเดือนสูงกว่าเงินเหลือประมาณ <b class="sensitive-data">${B(need - surplus)}</b> แนะนำให้ขยายกำหนดเวลาของเป้าหมายที่ไม่เร่งด่วน หรือลดรายจ่ายหมวดช้อปปิ้ง/บันเทิง`;
+}
+
+// Initial Call
+updatePrivacyPayload();
+renderGoals();
+</script>
+</body>
+</html>
