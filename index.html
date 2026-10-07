@@ -34,11 +34,17 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
       <button id="tab-dash" onclick="showPage('dash')" class="px-4 py-1.5 rounded-full tab-on">📊 ภาพรวม</button>
       <button id="tab-goals" onclick="showPage('goals')" class="px-4 py-1.5 rounded-full tab-off">🎯 เป้าหมายการออม</button>
     </nav>
-    <div class="flex items-center space-x-2 bg-indigo-800/60 px-3 py-1.5 rounded-full border border-indigo-700">
-      <span class="text-xs text-indigo-200">🔒 Privacy Mode:</span>
-      <button id="privacyToggle" onclick="togglePrivacy()" class="w-10 h-5 bg-slate-400 rounded-full p-0.5 transition-colors duration-200" aria-label="Privacy mode">
-        <div id="toggleDot" class="w-4 h-4 bg-white rounded-full transition-transform duration-200"></div>
+    <div class="flex items-center space-x-2">
+      <!-- ปุ่มตั้งค่าเงินต้น/รายรับ -->
+      <button onclick="openConfigModal()" class="px-3 py-1.5 bg-indigo-700 hover:bg-indigo-600 rounded-full text-xs font-medium transition border border-indigo-500/50 flex items-center gap-1">
+        ⚙️ ตั้งค่าเงิน
       </button>
+      <div class="flex items-center space-x-2 bg-indigo-800/60 px-3 py-1.5 rounded-full border border-indigo-700">
+        <span class="text-xs text-indigo-200">🔒 Privacy:</span>
+        <button id="privacyToggle" onclick="togglePrivacy()" class="w-10 h-5 bg-slate-400 rounded-full p-0.5 transition-colors duration-200" aria-label="Privacy mode">
+          <div id="toggleDot" class="w-4 h-4 bg-white rounded-full transition-transform duration-200"></div>
+        </button>
+      </div>
     </div>
   </div>
 </header>
@@ -48,15 +54,15 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
 <!-- ========== PAGE: DASHBOARD ========== -->
 <div id="page-dash" class="space-y-6">
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative group">
       <p class="text-xs font-medium text-slate-400 uppercase">สินทรัพย์รวม (Net Worth)</p>
       <h2 id="netWorthText" class="text-2xl font-bold mt-1 sensitive-data">฿ 1,250,000</h2>
       <span class="text-xs text-emerald-500 font-medium">+4.2% จากเดือนที่แล้ว</span>
     </div>
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
       <p class="text-xs font-medium text-slate-400 uppercase">รายรับเดือนนี้</p>
-      <h2 class="text-2xl font-bold text-emerald-600 mt-1 sensitive-data">฿ 65,000</h2>
-      <span class="text-xs text-slate-400">เงินเดือน + เงินลงทุน</span>
+      <h2 id="incomeText" class="text-2xl font-bold text-emerald-600 mt-1 sensitive-data">฿ 65,000</h2>
+      <span class="text-xs text-slate-400">เงินเดือน + รายได้อื่นๆ</span>
     </div>
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
       <p class="text-xs font-medium text-slate-400 uppercase">รายจ่ายเดือนนี้</p>
@@ -66,17 +72,17 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
       <p class="text-xs font-medium text-slate-400 uppercase">อัตราการออม (Savings Rate)</p>
       <h2 id="rateText" class="text-2xl font-bold text-indigo-600 mt-1 sensitive-data">56.2%</h2>
-      <span class="text-xs text-emerald-500 font-medium">สูงกว่าเป้าหมาย (50%)</span>
+      <span id="rateStatus" class="text-xs text-emerald-500 font-medium">สูงกว่าเป้าหมาย (50%)</span>
     </div>
   </div>
 
   <!-- AI ADVICE BANNER -->
   <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 rounded-2xl shadow-md">
     <div class="flex items-start space-x-4">
-      <div class="p-3 bg-white/20 rounded-xl">🤖</div>
+      <div class="p-3 bg-white/20 rounded-xl text-2xl">🤖</div>
       <div>
         <h3 class="font-semibold text-lg">คำแนะนำการเงินจาก AI Agent</h3>
-        <p class="text-sm text-indigo-100 mt-1">
+        <p id="aiAdviceMain" class="text-sm text-indigo-100 mt-1">
           "จากการวิเคราะห์พฤติกรรมเดือนนี้ คุณมีอัตราการออมสูงถึง <strong id="aiRateAdv">56.2%</strong> แนะนำให้แบ่งเงินออมส่วนเกินไปใส่ในเป้าหมายการออมของคุณก่อน แล้วจึงนำส่วนที่เหลือไปลงทุนในกองทุนดัชนี (Index Fund) เพื่อสร้างผลตอบแทนครับ"
         </p>
         <button onclick="showPage('goals')" class="mt-3 text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full">ดูเป้าหมายการออม →</button>
@@ -127,14 +133,12 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
   <!-- REAL-TIME PRIVACY PAYLOAD INSPECTOR (DEVELOPER MODE) -->
   <div class="mt-8 border-t border-slate-200/80 pt-4">
     <div class="flex justify-end">
-      <!-- ปุ่มสวิตช์เปิด-ปิด Developer Mode -->
       <button onclick="toggleInspector()" class="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1.5 transition-colors">
         <span id="inspectorIcon">🛠️</span>
         <span id="inspectorBtnText">Developer Mode (Privacy Payload)</span>
       </button>
     </div>
 
-    <!-- ตัวกล่อง JSON ซ่อนไว้เป็นค่าเริ่มต้น (มี class hidden) -->
     <div id="inspectorContent" class="hidden mt-3 bg-slate-900 text-emerald-400 p-5 rounded-2xl shadow-lg border border-slate-800 font-mono text-xs space-y-2">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <span class="font-bold flex items-center gap-2 text-white">
@@ -203,18 +207,93 @@ body{font-family:'Prompt',system-ui,sans-serif;background:#f8fafc}
 
 </main>
 
+<!-- ========== MODAL: SETTINGS (แก้ไขสินทรัพย์ & รายรับ) ========== -->
+<div id="configModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+    <div class="flex justify-between items-center border-b pb-3">
+      <h3 class="font-bold text-lg text-slate-800">⚙️ ตั้งค่าข้อมูลการเงิน</h3>
+      <button onclick="closeConfigModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg">✕</button>
+    </div>
+    <form onsubmit="saveConfig(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-medium text-slate-600 mb-1">สินทรัพย์รวม (Net Worth)</label>
+        <input id="cfgNetWorth" type="number" min="0" required class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-slate-600 mb-1">รายรับรวมต่อเดือน (Income)</label>
+        <input id="cfgIncome" type="number" min="1" required class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="closeConfigModal()" class="w-1/2 py-2 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-200 transition">ยกเลิก</button>
+        <button type="submit" class="w-1/2 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition">บันทึกข้อมูล</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 let isPrivacyOn = false;
 let categoryData = { 'ที่พักอาศัย': 12000, 'อาหาร': 8500, 'เดินทาง': 3000, 'ช้อปปิ้ง': 5000 };
-const INCOME = 65000;
-let initialAssets = 1250000;
+
+// ตัวแปรที่ปรับแก้ไขได้จริง
+let currentIncome = 65000;
+let currentNetWorth = 1250000;
+
 const sessionRandomId = "anon_" + Math.random().toString(36).substring(2, 10);
 
 const B = n => '฿ ' + Math.round(n).toLocaleString('th-TH');
 const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const totalExpense = () => Object.values(categoryData).reduce((a, b) => a + b, 0);
 
-/* ---------- Toggle Inspector Function ---------- */
+/* ---------- Config Modal Functions ---------- */
+function openConfigModal() {
+  document.getElementById('cfgNetWorth').value = currentNetWorth;
+  document.getElementById('cfgIncome').value = currentIncome;
+  document.getElementById('configModal').classList.remove('hidden');
+}
+
+function closeConfigModal() {
+  document.getElementById('configModal').classList.add('hidden');
+}
+
+function saveConfig(e) {
+  e.preventDefault();
+  currentNetWorth = parseFloat(document.getElementById('cfgNetWorth').value) || 0;
+  currentIncome = parseFloat(document.getElementById('cfgIncome').value) || 0;
+  
+  updateDashboardUI();
+  updatePrivacyPayload();
+  renderGoals();
+  closeConfigModal();
+}
+
+/* ---------- Update Dashboard UI ---------- */
+function updateDashboardUI() {
+  const t = totalExpense();
+  const savingsRate = currentIncome > 0 ? (((currentIncome - t) / currentIncome) * 100).toFixed(1) : 0;
+  const expPctVal = currentIncome > 0 ? ((t / currentIncome) * 100).toFixed(1) : 0;
+
+  document.getElementById('netWorthText').textContent = B(currentNetWorth);
+  document.getElementById('incomeText').textContent = B(currentIncome);
+  document.getElementById('totalExpenseText').textContent = B(t);
+  document.getElementById('expPct').textContent = expPctVal + '% ของรายรับ';
+  document.getElementById('rateText').textContent = savingsRate + '%';
+  document.getElementById('aiRateAdv').textContent = savingsRate + '%';
+
+  const rateStatusElem = document.getElementById('rateStatus');
+  if (savingsRate >= 50) {
+    rateStatusElem.textContent = 'สูงกว่าเป้าหมาย (50%)';
+    rateStatusElem.className = 'text-xs text-emerald-500 font-medium';
+  } else if (savingsRate >= 20) {
+    rateStatusElem.textContent = 'อยู่ในเกณฑ์ปกติ';
+    rateStatusElem.className = 'text-xs text-indigo-500 font-medium';
+  } else {
+    rateStatusElem.textContent = 'ควรลดรายจ่ายเพิ่ม';
+    rateStatusElem.className = 'text-xs text-rose-500 font-medium';
+  }
+}
+
+/* ---------- Toggle Inspector ---------- */
 function toggleInspector() {
   const content = document.getElementById('inspectorContent');
   const btnText = document.getElementById('inspectorBtnText');
@@ -232,11 +311,11 @@ function toggleInspector() {
 /* ---------- Dynamic Privacy Anonymizer Engine ---------- */
 function updatePrivacyPayload() {
   const totalExp = totalExpense();
-  const savingsRate = INCOME > 0 ? ((INCOME - totalExp) / INCOME * 100) : 0;
+  const savingsRate = currentIncome > 0 ? ((currentIncome - totalExp) / currentIncome * 100) : 0;
   
   let incomeTier = "LOW";
-  if (INCOME >= 50000) incomeTier = "HIGH";
-  else if (INCOME >= 30000) incomeTier = "MEDIUM";
+  if (currentIncome >= 50000) incomeTier = "HIGH";
+  else if (currentIncome >= 30000) incomeTier = "MEDIUM";
 
   let rateBand = "<20%";
   if (savingsRate >= 50) rateBand = ">50%";
@@ -321,14 +400,8 @@ function addExpense(e) {
   const list = document.getElementById('transactionList');
   list.insertBefore(li, list.firstChild);
 
-  const t = totalExpense();
-  const currentSavingsRate = ((INCOME - t) / INCOME * 100).toFixed(1);
-  document.getElementById('totalExpenseText').textContent = B(t);
-  document.getElementById('expPct').textContent = (t / INCOME * 100).toFixed(1) + '% ของรายรับ';
-  document.getElementById('rateText').textContent = currentSavingsRate + '%';
-  document.getElementById('aiRateAdv').textContent = currentSavingsRate + '%';
-  
   document.getElementById('expenseForm').reset();
+  updateDashboardUI();
   updatePrivacyPayload();
   renderGoals();
 }
@@ -346,6 +419,7 @@ function monthsLeft(date) {
   const now = new Date(), d = new Date(date);
   return Math.max(1, (d.getFullYear() - now.getFullYear()) * 12 + d.getMonth() - now.getMonth());
 }
+
 function addGoal(e) {
   e.preventDefault();
   goals.push({
@@ -359,6 +433,7 @@ function addGoal(e) {
   updatePrivacyPayload();
   renderGoals();
 }
+
 function deposit(id) {
   const inp = document.getElementById('dep-' + id);
   const v = parseFloat(inp.value);
@@ -367,6 +442,7 @@ function deposit(id) {
   g.saved = Math.min(g.target, g.saved + v);
   renderGoals();
 }
+
 function removeGoal(id) { 
   goals = goals.filter(g => g.id !== id); 
   updatePrivacyPayload();
@@ -374,10 +450,11 @@ function removeGoal(id) {
 }
 
 function renderGoals() {
-  const surplus = INCOME - totalExpense();
+  const surplus = currentIncome - totalExpense();
   const tTarget = goals.reduce((a, g) => a + g.target, 0);
   const tSaved = goals.reduce((a, g) => a + g.saved, 0);
   let need = 0;
+  
   document.getElementById('goalList').innerHTML = goals.length ? goals.map(g => {
     const pct = Math.min(100, g.saved / g.target * 100);
     const m = monthsLeft(g.date);
@@ -418,6 +495,7 @@ function renderGoals() {
 }
 
 // Initial Call
+updateDashboardUI();
 updatePrivacyPayload();
 renderGoals();
 </script>
